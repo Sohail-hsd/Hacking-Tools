@@ -2,7 +2,9 @@
 
 import scapy.all as scapy
 
-def scan(ip):
-	arp_request = scapy.ARP(pdst=ip)
+def scane(ip):
+	arp_request = scapy.ARP(pdst=id)
+	print(arp_request.summary())
+	scapy.ls(arp_request)
 
-scan(192.168.10.1/24)
+scane("192.168.10.1")
