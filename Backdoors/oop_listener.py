@@ -17,13 +17,17 @@ class Listener:
     
     def exe_remort(self,command):
         self.reliable_send(command)
-        return self.connection.recv(1024)
+        if command[0] == "exit":    
+            self.connection.close()
+            exit()
+        return self.reliable_receive()
     
     def reliable_send(self,data):
         json_data = json.dumps(data)
-        return self.connection.send(bytes(json_data,encoding="utf-8"))
+        self.connection.send(bytes(json_data,encoding="utf-8"))
     
     def reliable_receive(self):
+        json_data = ""
         while True:
             try:
                 json_data =  json_data + self.connection.recv(1024)
@@ -34,6 +38,8 @@ class Listener:
     def run(self):
         while True:
             command = input(">> ")
+            command = command.split(" ")
+            print(command)
             result = self.exe_remort(command)
             print(result)
 
