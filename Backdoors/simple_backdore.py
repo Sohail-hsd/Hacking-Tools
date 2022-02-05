@@ -4,7 +4,7 @@ import subprocess
 import socket
 
 
-ip = "192.168.10.8"
+ip = "192.168.10.10"
 
 def exe_sys_command(command):
     return subprocess.check_output(command,shell=True)

