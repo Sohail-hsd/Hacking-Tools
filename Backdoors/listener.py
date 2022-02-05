@@ -15,7 +15,7 @@ listener.listen() will return to object :: connection and address(target_ip)
 """
 
 listener = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-listener.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) 
+listener.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1) 
 listener.bind((ip,port))
 print("[-] Waiting for incomming connection.")
 connection,address = listener.listen(0) 
