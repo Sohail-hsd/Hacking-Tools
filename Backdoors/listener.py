@@ -24,6 +24,6 @@ print(f"[+] Connected successfully to {address}")
 
 while True:
     command = input(">> ")
-    connection.send(command)
+    connection.send(command.encode())
     result = connection.recv(1024)
     print(result)

